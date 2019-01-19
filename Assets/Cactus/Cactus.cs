@@ -8,6 +8,7 @@ using System.Collections;
 public class Cactus : MonoBehaviour {
 
 	public KeyCode cactus; // The key to hit for jumping.
+    public bool facingRight = true;//used for changing directions, should always start facing right
 
 	[SerializeField]
 	private float jumpFX = 0f; // Horizontal Force to apply to make the cactus jump.
@@ -45,7 +46,19 @@ public class Cactus : MonoBehaviour {
 			anim.SetBool("Charging", false);
 			anim.SetBool("InAir", true);
 		}
-	}
+
+        //changing directions before jump
+        if(Input.GetKeyDown(KeyCode.LeftArrow)&&(facingRight==true))
+        {
+            facingRight = false;
+            transform.localRotation = Quaternion.Euler(0, 180, 0);
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow)&&facingRight==false)
+        {
+            facingRight = true;
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+        }
+    }
 		
 	// Charges the power of our jump. Jump strength is indicated by our color.
 	private IEnumerator ChargeJump() {
@@ -55,8 +68,12 @@ public class Cactus : MonoBehaviour {
 		jumpFY = 200f;
 		Color tempColor = Color.white;
 		while (jumpFX < MAX_JUMP_FX || jumpFY < MAX_JUMP_FY) {
-			jumpFX = Mathf.Lerp(100, MAX_JUMP_FX, (timer / HOLD_TIME));
-			jumpFY = Mathf.Lerp(200, MAX_JUMP_FY, (timer / HOLD_TIME));
+            //changing direction depending on where player is faacing
+            if(facingRight==true)
+			    jumpFX = Mathf.Lerp(100, MAX_JUMP_FX, (timer / HOLD_TIME));
+            if(facingRight==false)
+                jumpFX = Mathf.Lerp(-100, MAX_JUMP_FX, (timer / HOLD_TIME));//NOTE: not tested yet
+            jumpFY = Mathf.Lerp(200, MAX_JUMP_FY, (timer / HOLD_TIME));
 			tempColor.r = Mathf.Lerp(Color.white.r, Color.red.r, (timer / HOLD_TIME));
 			tempColor.g = Mathf.Lerp(Color.white.g, Color.red.g, (timer / HOLD_TIME));
 			tempColor.b = Mathf.Lerp(Color.white.b, Color.red.b, (timer / HOLD_TIME));
