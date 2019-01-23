@@ -10,9 +10,7 @@ public class Cactus : MonoBehaviour {
 	public KeyCode cactus; // The key to hit for jumping.
     public int facingRight = 1;//used for changing directions, should always start facing right. +1 is right, -1 is left. Possible values are +1 and -1.
 
-	[SerializeField]
 	private float jumpFX = 0f; // Horizontal Force to apply to make the cactus jump.
-	[SerializeField]
 	private float jumpFY = 0f; // Vertictal Force to apply to make the cactus jump.
 
 	// Forces for maximum jump strength.
@@ -44,7 +42,11 @@ public class Cactus : MonoBehaviour {
 		if (Input.GetKeyUp(cactus) && !anim.GetBool("InAir")) { // Release our jump.
 			StopCoroutine(currCoroutine);
 			sr.color = Color.white;
-            rb.AddForce(new Vector2(direction.x * jumpFX, direction.y * jumpFY));
+			if (direction.y < 0.1f) { // Handle the case where the mouse is pointing below our character. This is a short hop.
+				rb.AddForce(new Vector2((direction.x / 2f) * jumpFX, 200f));
+			} else {
+				rb.AddForce(new Vector2(direction.x * jumpFX, direction.y * jumpFY));
+			}
 			anim.SetBool("Charging", false);
 			anim.SetBool("InAir", true);
 		}
