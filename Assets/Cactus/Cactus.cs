@@ -9,6 +9,7 @@ public class Cactus : MonoBehaviour {
 
 	public KeyCode cactus; // The key to hit for jumping.
     public int facingRight = 1;//used for changing directions, should always start facing right. +1 is right, -1 is left. Possible values are +1 and -1.
+    public Material red;
 
 	[SerializeField]
 	private float jumpFX = 0f; // Horizontal Force to apply to make the cactus jump.
@@ -26,11 +27,17 @@ public class Cactus : MonoBehaviour {
 	private Animator anim;
 	private Rigidbody2D rb;
 	private SpriteRenderer sr;
+    private LineRenderer line;
 
 	void Awake() {
 		anim = GetComponent<Animator>();
 		rb = GetComponent<Rigidbody2D>();
 		sr = GetComponent<SpriteRenderer>();
+        line = GetComponent<LineRenderer>();
+
+        // setup for the lineRenderer for drawing prediction line
+        line.startWidth = .05f;
+        line.endWidth = line.startWidth;
 	}
 
 	// Input detection
@@ -51,6 +58,9 @@ public class Cactus : MonoBehaviour {
 		if ((Input.GetKeyDown(KeyCode.LeftArrow)&&(facingRight == 1))||(Input.GetKeyDown(KeyCode.RightArrow)&&facingRight == -1)) {
 			Facing();
         }
+
+        // Indicates the jump power/direction
+        DrawLine();
     }
 		
 	// Charges the power of our jump. Jump strength is indicated by our color.
@@ -126,4 +136,22 @@ public class Cactus : MonoBehaviour {
 			anim.SetBool("InAir", false);
 		}
 	}
+
+    // Draws a line to indicate the direction of the jump
+    void DrawLine()
+    {
+        // declare local variables
+        Vector3 end;
+        Vector3 start;
+
+        // set up points for the line
+        end = new Vector3(jumpFX, jumpFY, 0);
+        start = Vector3.zero;
+        end += start;
+        end /= 400; // I played with this number til I thought it felt right this might need to be changed later
+
+        // draw the line
+        line.SetPosition(0, start);
+        line.SetPosition(1, end);
+    }
 }
