@@ -60,9 +60,6 @@ public class Cactus : MonoBehaviour {
 			} else {
 				rb.AddForce(new Vector2(direction.x * jumpFX, direction.y * jumpFY), ForceMode2D.Impulse);
 			}
-			// Reset our jump variables.
-			jumpFX = 0;
-			jumpFY = 0;
 			anim.SetBool("Charging", false);
 			anim.SetBool("InAir", true);
 		}
