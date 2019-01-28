@@ -10,9 +10,7 @@ public class Cactus : MonoBehaviour {
 	public KeyCode cactus; // The key to hit for jumping.
     public int facingRight = 1;//used for changing directions, should always start facing right. +1 is right, -1 is left. Possible values are +1 and -1.
 
-	[SerializeField]
 	private float jumpFX = 0f; // Horizontal Force to apply to make the cactus jump.
-	[SerializeField]
 	private float jumpFY = 0f; // Vertictal Force to apply to make the cactus jump.
 
 	// Forces for maximum jump strength.
@@ -35,20 +33,26 @@ public class Cactus : MonoBehaviour {
 
 	// Input detection
 	void Update () {
-		if (Input.GetKeyDown(cactus) && !anim.GetBool("InAir")) { // Charge our jump.
+        Vector2 direction = GetMousePos();
+
+        if (Input.GetKeyDown(cactus) && !anim.GetBool("InAir")) { // Charge our jump.
 			currCoroutine = StartCoroutine(ChargeJump());
 			anim.SetBool("Charging", true);
 		} 
 		if (Input.GetKeyUp(cactus) && !anim.GetBool("InAir")) { // Release our jump.
 			StopCoroutine(currCoroutine);
 			sr.color = Color.white;
-			rb.AddForce(new Vector2(facingRight * jumpFX, jumpFY));
+			if (direction.y < 0.1f) { // Handle the case where the mouse is pointing below our character. This is a short hop.
+				rb.AddForce(new Vector2((direction.x / 2f) * jumpFX, 200f));
+			} else {
+				rb.AddForce(new Vector2(direction.x * jumpFX, direction.y * jumpFY));
+			}
 			anim.SetBool("Charging", false);
 			anim.SetBool("InAir", true);
 		}
 
         //changing directions before jump
-		if ((Input.GetKeyDown(KeyCode.LeftArrow)&&(facingRight == 1))||(Input.GetKeyDown(KeyCode.RightArrow)&&facingRight == -1)) {
+        if ((direction.x <= 0 && (facingRight == 1)) || (direction.x > 0 && facingRight == -1))  {
 			Facing();
         }
     }
@@ -109,11 +113,25 @@ public class Cactus : MonoBehaviour {
 		*/
 	}
 
-	/* Changes the direction that this object is facing.
+    /* Returns the normalized 2d vector that points from the player to the mouse position
+    */
+    private Vector2 GetMousePos()
+    {
+        float distanceToCamera = 10; //this is used because ScreenToWorldPoint creates the point on a X/Y plane Z units away from the camera
+
+        Vector3 playerWorldPos = gameObject.transform.position; //the players position in the world
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distanceToCamera)); //mouses postion on the same plane as the player
+        Vector2 direction = (mouseWorldPos - playerWorldPos).normalized; //normalized direction vector
+
+        Debug.DrawRay(playerWorldPos,direction,Color.red);
+        return direction;
+    }
+
+    /* Changes the direction that this object is facing.
 	 * We take our current scale and save a temporary copy; we then modify individual components
 	 * of it and then save it back into our current scale.
 	 */
-	private void Facing() {
+    private void Facing() {
 		Vector3 tempScale = transform.localScale;
 		tempScale.x *= -1;
 		facingRight *= -1;
