@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Collections;
 
 public class Cactus : MonoBehaviour {
-
+    public GameObject deathBounds;//area where player falls & dies
 	public KeyCode cactus; // The key to hit for jumping.
     public int facingRight = 1;//used for changing directions, should always start facing right. +1 is right, -1 is left. Possible values are +1 and -1.
     public Material red;
@@ -29,6 +29,8 @@ public class Cactus : MonoBehaviour {
 	private SpriteRenderer sr;
     private LineRenderer line;
 
+    private Vector3 spawn;//a position to be saved so player can be respawned
+
 	void Awake() {
 		anim = GetComponent<Animator>();
 		rb = GetComponent<Rigidbody2D>();
@@ -38,6 +40,7 @@ public class Cactus : MonoBehaviour {
         // setup for the lineRenderer for drawing prediction line
         line.startWidth = .05f;
         line.endWidth = line.startWidth;
+        spawn = transform.position;//the spawn point should be where player begins in scene
 	}
 
 	// Input detection
@@ -61,6 +64,11 @@ public class Cactus : MonoBehaviour {
 
         // Indicates the jump power/direction
         DrawLine();
+        //checking if below the death bounds
+        if (deathBounds.transform.position.y>=transform.position.y)
+        {
+            Death();
+        }
     }
 		
 	// Charges the power of our jump. Jump strength is indicated by our color.
@@ -129,7 +137,13 @@ public class Cactus : MonoBehaviour {
 		facingRight *= -1;
 		transform.localScale = tempScale;
 	}
-
+    //when player dies (whether out of bounds or hit by obstacle) then respawns
+    private void Death()
+    {
+        //play sound effect?
+        //dying visual effect?
+        transform.position = spawn;
+    }
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Ground") {
