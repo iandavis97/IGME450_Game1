@@ -183,7 +183,7 @@ public class Cactus : MonoBehaviour {
         end = new Vector3(jumpFX, jumpFY, 0);
         start = Vector3.zero;
         end += start;
-        end /= 400; // I played with this number til I thought it felt right this might need to be changed later
+        // end /= 400; // I played with this number til I thought it felt right this might need to be changed later
 
         // draw the line
         line.SetPosition(0, start);
