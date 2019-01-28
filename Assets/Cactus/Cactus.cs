@@ -14,9 +14,12 @@ public class Cactus : MonoBehaviour {
 	private float jumpFY = 0f; // Vertictal Force to apply to make the cactus jump.
 
 	// Forces for maximum jump strength.
-	private const float MAX_JUMP_FX = 600f; 
-	private const float MAX_JUMP_FY = 1200f; 
-	private const float HOLD_TIME = 2f; // Amount of time it takes to hold the button for a maximum jump.
+	private const float MIN_JUMP_FX = 4f; 
+	private const float MIN_JUMP_FY = 8f; 
+	private const float MAX_JUMP_FX = 20f; 
+	private const float MAX_JUMP_FY = 40f; 
+	private const float HOLD_TIME = 1f; // Amount of time it takes to hold the button for a maximum jump.
+	private const float MAX_DELAY = 0.125f; // Amount of time to hold onto maximum charge before oscillating back down.
 
 	// Keeps track of the current coroutine that's running.
 	private Coroutine currCoroutine = null;
@@ -43,9 +46,9 @@ public class Cactus : MonoBehaviour {
 			StopCoroutine(currCoroutine);
 			sr.color = Color.white;
 			if (direction.y < 0.1f) { // Handle the case where the mouse is pointing below our character. This is a short hop.
-				rb.AddForce(new Vector2((direction.x / 2f) * jumpFX, 200f));
+				rb.AddForce(new Vector2(MIN_JUMP_FX, MIN_JUMP_FY), ForceMode2D.Impulse);
 			} else {
-				rb.AddForce(new Vector2(direction.x * jumpFX, direction.y * jumpFY));
+				rb.AddForce(new Vector2(direction.x * jumpFX, direction.y * jumpFY), ForceMode2D.Impulse);
 			}
 			anim.SetBool("Charging", false);
 			anim.SetBool("InAir", true);
@@ -61,16 +64,16 @@ public class Cactus : MonoBehaviour {
 	private IEnumerator ChargeJump() {
 		float timer;
 		// Default "tap-jump" is a tiny hop that gets us off the ground. 
-		jumpFX = 100f;
-		jumpFY = 200f;
+		jumpFX = MIN_JUMP_FX;
+		jumpFY = MIN_JUMP_FY;
 		Color tempColor = Color.white;
 		// Oscillating jump
 		while (true) {
 			// Our jump strength increases...
 			timer = 0f;
 			while (jumpFX < MAX_JUMP_FX || jumpFY < MAX_JUMP_FY) { 
-				jumpFX = Mathf.Lerp(100, MAX_JUMP_FX, (timer / HOLD_TIME));
-				jumpFY = Mathf.Lerp(200, MAX_JUMP_FY, (timer / HOLD_TIME));
+				jumpFX = Mathf.Lerp(MIN_JUMP_FX, MAX_JUMP_FX, (timer / HOLD_TIME));
+				jumpFY = Mathf.Lerp(MIN_JUMP_FY, MAX_JUMP_FY, (timer / HOLD_TIME));
 				tempColor.r = Mathf.Lerp(Color.white.r, Color.red.r, (timer / HOLD_TIME));
 				tempColor.g = Mathf.Lerp(Color.white.g, Color.red.g, (timer / HOLD_TIME));
 				tempColor.b = Mathf.Lerp(Color.white.b, Color.red.b, (timer / HOLD_TIME));
@@ -78,12 +81,12 @@ public class Cactus : MonoBehaviour {
 				timer += Time.deltaTime;
 				yield return new WaitForSeconds(Time.deltaTime);
 			}
-			yield return new WaitForSeconds(Time.deltaTime);
+			yield return new WaitForSeconds(MAX_DELAY);
 			// Then, it decreases.
 			timer = 0f;
-			while (jumpFX > 100 || jumpFY > 200) { 
-				jumpFX = Mathf.Lerp(MAX_JUMP_FX, 100, (timer / HOLD_TIME));
-				jumpFY = Mathf.Lerp(MAX_JUMP_FY, 200, (timer / HOLD_TIME));
+			while (jumpFX > MIN_JUMP_FX || jumpFY > MIN_JUMP_FY) { 
+				jumpFX = Mathf.Lerp(MAX_JUMP_FX, MIN_JUMP_FX, (timer / HOLD_TIME));
+				jumpFY = Mathf.Lerp(MAX_JUMP_FY, MIN_JUMP_FY, (timer / HOLD_TIME));
 				tempColor.r = Mathf.Lerp(Color.red.r, Color.white.r, (timer / HOLD_TIME));
 				tempColor.g = Mathf.Lerp(Color.red.g, Color.white.g, (timer / HOLD_TIME));
 				tempColor.b = Mathf.Lerp(Color.red.b, Color.white.b, (timer / HOLD_TIME));
@@ -144,4 +147,24 @@ public class Cactus : MonoBehaviour {
 			anim.SetBool("InAir", false);
 		}
 	}
+
+
+    // Draws a line to indicate the direction of the jump
+    void DrawLine()
+    {
+        // declare local variables
+        Vector3 end;
+        Vector3 start;
+
+        // set up points for the line
+        end = new Vector3(jumpFX, jumpFY, 0);
+        start = Vector3.zero;
+        end += start;
+        // end /= 400; // I played with this number til I thought it felt right this might need to be changed later
+
+        // draw the line
+        line.SetPosition(0, start);
+        line.SetPosition(1, end);
+    }
+
 }
