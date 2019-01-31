@@ -4,10 +4,12 @@
  */
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Cactus : MonoBehaviour {
 
 	public GameObject deathBounds;//area where player falls & dies
+	public Animator animDust; // Child gameobject which has impact animations.
 
 	public KeyCode cactus; // The key to hit for jumping.
     public int facingRight = 1;//used for changing directions, should always start facing right. +1 is right, -1 is left. Possible values are +1 and -1.
@@ -26,6 +28,8 @@ public class Cactus : MonoBehaviour {
 	// Keeps track of the current coroutine that's running.
 	private Coroutine currCoroutine = null;
 
+	private GameObject winPanel; // A win screen called "Win Panel".
+
 	private Animator anim;
 	private Rigidbody2D rb;
 	private SpriteRenderer sr;
@@ -42,6 +46,8 @@ public class Cactus : MonoBehaviour {
 		line.startWidth = .05f;
 		line.endWidth = line.startWidth;
 		spawn = transform.position;//the spawn point should be where player begins in scene
+		winPanel = GameObject.Find("Win Panel");
+		winPanel.SetActive(false);
 	}
 
 	// Input detection
@@ -54,9 +60,12 @@ public class Cactus : MonoBehaviour {
 		} 
 		if (Input.GetKeyUp(cactus) && !anim.GetBool("InAir")) { // Release our jump.
 			StopCoroutine(currCoroutine);
+			animDust.SetTrigger("jump");
+			animDust.transform.position = new Vector2(transform.position.x - (transform.localScale.x * 0.5f), transform.position.y + 0.25f);
+			animDust.transform.localScale = transform.localScale;
 			sr.color = Color.white;
 			if (direction.y < 0.1f) { // Handle the case where the mouse is pointing below our character. This is a short hop.
-				rb.AddForce(new Vector2(MIN_JUMP_FX, MIN_JUMP_FY), ForceMode2D.Impulse);
+				rb.AddForce(new Vector2(direction.x * MIN_JUMP_FX, MIN_JUMP_FY), ForceMode2D.Impulse);
 			} else {
 				rb.AddForce(new Vector2(direction.x * jumpFX, direction.y * jumpFY), ForceMode2D.Impulse);
 			}
@@ -167,6 +176,14 @@ public class Cactus : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Ground") {
 			anim.SetBool("InAir", false);
+			animDust.SetTrigger("land");
+			animDust.transform.position = new Vector2(transform.position.x, transform.position.y + 0.25f);
+		}
+	}
+
+	void OnTriggerEnter2D(Collider2D coll) {
+		if (coll.gameObject.tag.Equals("Goal")) {
+			winPanel.SetActive(true);
 		}
 	}
 
