@@ -46,7 +46,6 @@ public class Cactus : MonoBehaviour {
 		line.startWidth = .05f;
 		line.endWidth = line.startWidth;
 		spawn = transform.position;//the spawn point should be where player begins in scene
-
 		winPanel = GameObject.Find("Win Panel");
 		winPanel.SetActive(false);
 	}
