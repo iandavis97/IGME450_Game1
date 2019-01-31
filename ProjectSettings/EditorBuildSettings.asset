@@ -9,11 +9,20 @@ EditorBuildSettings:
     path: Assets/Title Screen.unity
     guid: a83d3e4589ba53f45a92548ac10e9bea
   - enabled: 1
-    path: Assets/MVI.unity
-    guid: 7a542d917ce1b0f45abd20898a1150d4
-  - enabled: 1
     path: Assets/Tutorial.unity
     guid: c720a34a08747b04fa4249b44ec015e6
+  - enabled: 1
+    path: Assets/ChooseLevel.unity
+    guid: 7ea08a3c15e0679449f94044c7674063
+  - enabled: 1
+    path: Assets/MVP.unity
+    guid: ad5b4e6c052d1e048aee7f12d0eaab51
+  - enabled: 1
+    path: Assets/Ian_Level.unity
+    guid: 77e534130c8d8de40833d27f2d1eef34
+  - enabled: 1
+    path: Assets/So_Level.unity
+    guid: 7a542d917ce1b0f45abd20898a1150d4
   - enabled: 1
     path: Assets/Credits.unity
     guid: f89bcfd9175be2b4bb92bc7be211063c
