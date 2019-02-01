@@ -16,6 +16,7 @@ public class Cactus : MonoBehaviour {
 
 	private float jumpFX = 0f; // Horizontal Force to apply to make the cactus jump.
 	private float jumpFY = 0f; // Vertictal Force to apply to make the cactus jump.
+    private float grav;
 
 	// Forces for maximum jump strength.
 	private const float MIN_JUMP_FX = 4f; 
@@ -34,6 +35,7 @@ public class Cactus : MonoBehaviour {
 	private Rigidbody2D rb;
 	private SpriteRenderer sr;
 	private LineRenderer line;
+    private Vector2 direction;
 
 	private Vector3 spawn;//a position to be saved so player can be respawned
 
@@ -48,11 +50,15 @@ public class Cactus : MonoBehaviour {
 		spawn = transform.position;//the spawn point should be where player begins in scene
 		winPanel = GameObject.Find("Win Panel");
 		winPanel.SetActive(false);
-	}
+
+        // set up a variable to keep track of gravity so it can be turned on and off easily
+        grav = GetComponent<Rigidbody2D>().gravityScale;
+    }
 
 	// Input detection
 	void Update () {
-        Vector2 direction = GetMousePos();
+        direction = GetMousePos();
+
 
         if (Input.GetKeyDown(cactus) && !anim.GetBool("InAir")) { // Charge our jump.
 			currCoroutine = StartCoroutine(ChargeJump());
@@ -71,6 +77,7 @@ public class Cactus : MonoBehaviour {
 			}
 			anim.SetBool("Charging", false);
 			anim.SetBool("InAir", true);
+            rb.gravityScale = grav;
 		}
 		DrawLine();
         //changing directions before jump
@@ -179,7 +186,15 @@ public class Cactus : MonoBehaviour {
 			animDust.SetTrigger("land");
 			animDust.transform.position = new Vector2(transform.position.x, transform.position.y + 0.25f);
 		}
-	}
+
+        // When player hits something sticky, they shouldn't bounce
+        if (coll.gameObject.tag == "Sticky")
+        {
+            anim.SetBool("InAir", false);
+            rb.gravityScale = 0;
+            rb.velocity = Vector2.zero;
+        }
+    }
 
 	void OnTriggerEnter2D(Collider2D coll) {
 		if (coll.gameObject.tag.Equals("Goal")) {
@@ -191,19 +206,35 @@ public class Cactus : MonoBehaviour {
     // Draws a line to indicate the direction of the jump
     void DrawLine()
     {
-        // declare local variables
-        Vector3 end;
-        Vector3 start;
+        if (anim.GetBool("Charging"))
+        {
+            // declare local variables
+            Vector3 end;
+            Vector3 start;
 
-        // set up points for the line
-        end = new Vector3(jumpFX, jumpFY, 0);
-        start = Vector3.zero;
-        end += start;
-        // end /= 400; // I played with this number til I thought it felt right this might need to be changed later
+            // set up points for the line
+            if (facingRight == 1)
+            {
+                end = new Vector3(direction.x * jumpFX, direction.y * jumpFY, 0);
+            }
+            else
+            {
+                end = new Vector3(direction.x * -1 * jumpFX, direction.y * jumpFY, 0);
+            }
+            
+            start = Vector3.zero;
+            end += start;
+            end /= 10; // I played with this number til I thought it felt right this might need to be changed later
 
-        // draw the line
-        line.SetPosition(0, start);
-        line.SetPosition(1, end);
+            // draw the line
+            line.SetPosition(0, start);
+            line.SetPosition(1, end);
+        }
+        else
+        {
+            line.SetPosition(0, Vector3.zero);
+            line.SetPosition(1, Vector3.zero);
+        }
     }
 
 }
