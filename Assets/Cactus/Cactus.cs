@@ -179,7 +179,7 @@ public class Cactus : MonoBehaviour {
 			animDust.SetTrigger("land");
 			animDust.transform.position = new Vector2(transform.position.x, transform.position.y + 0.25f);
 		}
-	}
+    }
 
 	void OnTriggerEnter2D(Collider2D coll) {
 		if (coll.gameObject.tag.Equals("Goal")) {
