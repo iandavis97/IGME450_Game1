@@ -24,9 +24,9 @@ EditorBuildSettings:
     path: Assets/So_Level.unity
     guid: 7a542d917ce1b0f45abd20898a1150d4
   - enabled: 1
-    path: Assets/Credits.unity
-    guid: f89bcfd9175be2b4bb92bc7be211063c
-  - enabled: 1
     path: Assets/Malcolm_Level.unity
     guid: 4d226575f32356946ba9132d06cf8d47
+  - enabled: 1
+    path: Assets/Credits.unity
+    guid: f89bcfd9175be2b4bb92bc7be211063c
   m_configObjects: {}

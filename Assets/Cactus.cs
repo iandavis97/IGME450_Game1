@@ -61,7 +61,7 @@ public class Cactus : MonoBehaviour {
 		if (Input.GetKeyUp(cactus) && !anim.GetBool("InAir")) { // Release our jump.
 			StopCoroutine(currCoroutine);
 			animDust.SetTrigger("jump");
-			animDust.transform.position = new Vector2(transform.position.x - (transform.localScale.x * 0.5f), transform.position.y + 0.25f);
+			animDust.transform.position = new Vector2(transform.position.x - (transform.localScale.x * 0.5f), transform.position.y -0.25f);
 			animDust.transform.localScale = transform.localScale;
 			sr.color = Color.white;
 			if (direction.y < 0.1f) { // Handle the case where the mouse is pointing below our character. This is a short hop.
@@ -177,7 +177,7 @@ public class Cactus : MonoBehaviour {
 		if (coll.gameObject.tag == "Ground") {
 			anim.SetBool("InAir", false);
 			animDust.SetTrigger("land");
-			animDust.transform.position = new Vector2(transform.position.x, transform.position.y + 0.25f);
+			animDust.transform.position = new Vector2(transform.position.x, transform.position.y - 0.25f);
 		}
     }
 
