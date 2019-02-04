@@ -152,14 +152,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 4342448823428016, guid: c9a553314a008c447b6f4b8d688b0e41, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 4342448823428016, guid: c9a553314a008c447b6f4b8d688b0e41, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: -2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9a553314a008c447b6f4b8d688b0e41, type: 2}
   m_IsPrefabAsset: 0
@@ -498,7 +490,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.3, y: 0.44}
   m_AnchorMax: {x: 0.7, y: 0.55}
-  m_AnchoredPosition: {x: -0.000015258789, y: 0.40000153}
+  m_AnchoredPosition: {x: 0, y: 0.40000153}
   m_SizeDelta: {x: 192, y: 71.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &461061087

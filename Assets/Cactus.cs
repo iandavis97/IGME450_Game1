@@ -37,6 +37,8 @@ public class Cactus : MonoBehaviour {
 
 	private Vector3 spawn;//a position to be saved so player can be respawned
 
+	private int layerMask;
+
 	void Awake() {
 		anim = GetComponent<Animator>();
 		rb = GetComponent<Rigidbody2D>();
@@ -48,15 +50,22 @@ public class Cactus : MonoBehaviour {
 		spawn = transform.position;//the spawn point should be where player begins in scene
 		winPanel = GameObject.Find("Win Panel");
 		winPanel.SetActive(false);
+		layerMask = 1 << 0; // Only collide with objects of layer 0 (default).
 	}
 
 	// Input detection
 	void Update () {
         Vector2 direction = GetMousePos();
 
+		// New GroundChecking implementation. 
+		if (Physics2D.Raycast(new Vector2(transform.position.x + 0.5f, transform.position.y), Vector2.down, 1.25f, layerMask) || Physics2D.Raycast(new Vector2(transform.position.x - 0.5f, transform.position.y), Vector2.down, 1.25f, layerMask)) {
+			anim.SetBool("InAir", false);
+		} else {
+			anim.SetBool("InAir", true);
+		}
+
         if (Input.GetKeyDown(cactus) && !anim.GetBool("InAir")) { // Charge our jump.
 			currCoroutine = StartCoroutine(ChargeJump());
-			anim.SetBool("Charging", true);
 		} 
 		if (Input.GetKeyUp(cactus) && !anim.GetBool("InAir")) { // Release our jump.
 			StopCoroutine(currCoroutine);
@@ -69,8 +78,13 @@ public class Cactus : MonoBehaviour {
 			} else {
 				rb.AddForce(new Vector2(direction.x * jumpFX, direction.y * jumpFY), ForceMode2D.Impulse);
 			}
+			// Reset jump force components to avoid "perfect landing jumps"
+			jumpFX = 0;
+			jumpFY = 0;
 			anim.SetBool("Charging", false);
-			anim.SetBool("InAir", true);
+		} else if (Input.GetKeyUp(cactus) && anim.GetBool("InAir")) { // Cancel our jump charge.
+			StopCoroutine(currCoroutine);
+			anim.SetBool("Charging", false);
 		}
 		DrawLine();
         //changing directions before jump
@@ -93,6 +107,7 @@ public class Cactus : MonoBehaviour {
 		Color tempColor = Color.white;
 		// Oscillating jump
 		while (true) {
+			anim.SetBool("Charging", true);
 			// Our jump strength increases...
 			timer = 0f;
 			while (jumpFX < MAX_JUMP_FX || jumpFY < MAX_JUMP_FY) { 
@@ -120,24 +135,6 @@ public class Cactus : MonoBehaviour {
 			}
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
-
-		/* 
-		// The following code is for an implementation where, upon reaching the maximum strength, 
-		// the charge resets directly to the weakest strength, starting over from the beginning. We can choose whether we want this or an oscillating jump.
-		while (jumpFX < MAX_JUMP_FX || jumpFY < MAX_JUMP_FY) {
-			jumpFX = Mathf.Lerp(100, MAX_JUMP_FX, (timer / HOLD_TIME));
-            jumpFY = Mathf.Lerp(200, MAX_JUMP_FY, (timer / HOLD_TIME));
-			tempColor.r = Mathf.Lerp(Color.white.r, Color.red.r, (timer / HOLD_TIME));
-			tempColor.g = Mathf.Lerp(Color.white.g, Color.red.g, (timer / HOLD_TIME));
-			tempColor.b = Mathf.Lerp(Color.white.b, Color.red.b, (timer / HOLD_TIME));
-			sr.color = tempColor;
-			timer += Time.deltaTime;
-			yield return new WaitForSeconds(Time.deltaTime);
-		}
-		yield return new WaitForSeconds(1/4f);
-		StopCoroutine(currCoroutine);
-		currCoroutine = StartCoroutine(ChargeJump());
-		*/
 	}
 
     /* Returns the normalized 2d vector that points from the player to the mouse position
@@ -170,12 +167,12 @@ public class Cactus : MonoBehaviour {
 	{
 		//play sound effect?
 		//dying visual effect?
+		rb.velocity = Vector2.zero;
 		transform.position = spawn;
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Ground") {
-			anim.SetBool("InAir", false);
 			animDust.SetTrigger("land");
 			animDust.transform.position = new Vector2(transform.position.x, transform.position.y - 0.25f);
 		}
@@ -184,9 +181,10 @@ public class Cactus : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D coll) {
 		if (coll.gameObject.tag.Equals("Goal")) {
 			winPanel.SetActive(true);
+			rb.velocity = Vector2.zero;
+			rb.isKinematic = true;
 		}
 	}
-
 
     // Draws a line to indicate the direction of the jump
     void DrawLine()
