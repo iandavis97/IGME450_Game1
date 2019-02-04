@@ -14,7 +14,11 @@ public class Cactus : MonoBehaviour {
 	public KeyCode cactus; // The key to hit for jumping.
     public int facingRight = 1;//used for changing directions, should always start facing right. +1 is right, -1 is left. Possible values are +1 and -1.
 
-	private float jumpFX = 0f; // Horizontal Force to apply to make the cactus jump.
+    //audio clips
+    public AudioSource deathSound;
+    public AudioSource springSound;
+
+    private float jumpFX = 0f; // Horizontal Force to apply to make the cactus jump.
 	private float jumpFY = 0f; // Vertictal Force to apply to make the cactus jump.
 
 	// Forces for maximum jump strength.
@@ -39,6 +43,8 @@ public class Cactus : MonoBehaviour {
 
 	private int layerMask;
 
+    
+
 	void Awake() {
 		anim = GetComponent<Animator>();
 		rb = GetComponent<Rigidbody2D>();
@@ -51,6 +57,8 @@ public class Cactus : MonoBehaviour {
 		winPanel = GameObject.Find("Win Panel");
 		winPanel.SetActive(false);
 		layerMask = 1 << 0; // Only collide with objects of layer 0 (default).
+        
+
 	}
 
 	// Input detection
@@ -68,6 +76,9 @@ public class Cactus : MonoBehaviour {
 			currCoroutine = StartCoroutine(ChargeJump());
 		} 
 		if (Input.GetKeyUp(cactus) && !anim.GetBool("InAir")) { // Release our jump.
+            //play sound effect
+            if (springSound.isPlaying == false)
+                springSound.Play();
 			StopCoroutine(currCoroutine);
 			animDust.SetTrigger("jump");
 			animDust.transform.position = new Vector2(transform.position.x - (transform.localScale.x * 0.5f), transform.position.y -0.25f);
@@ -165,9 +176,11 @@ public class Cactus : MonoBehaviour {
 	//when player dies (whether out of bounds or hit by obstacle) then respawns
 	private void Death()
 	{
-		//play sound effect?
-		//dying visual effect?
-		rb.velocity = Vector2.zero;
+        //play sound effect
+        if (deathSound.isPlaying == false)
+            deathSound.Play();
+        //dying visual effect?
+        rb.velocity = Vector2.zero;
 		transform.position = spawn;
 	}
 
