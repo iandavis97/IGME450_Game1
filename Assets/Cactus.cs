@@ -119,6 +119,7 @@ public class Cactus : MonoBehaviour {
 		// Oscillating jump
 		while (true) {
 			anim.SetBool("Charging", true);
+			anim.SetInteger("ChargePhase", 0); // ChargePhase goes from 0 to 4 inclusive, where 0 is minimum, 4 is max.
 			// Our jump strength increases...
 			timer = 0f;
 			while (jumpFX < MAX_JUMP_FX || jumpFY < MAX_JUMP_FY) { 
@@ -130,7 +131,16 @@ public class Cactus : MonoBehaviour {
 				sr.color = tempColor;
 				timer += Time.deltaTime;
 				yield return new WaitForSeconds(Time.deltaTime);
+				// Use jumpFX to check the strength of the jump and adjust animation accordingly.
+				if (jumpFX > (3 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 3);
+				} else if (jumpFX > (2 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 2);
+				} else if (jumpFX > (1 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 1);
+				}
 			}
+			anim.SetInteger("ChargePhase", 4);
 			yield return new WaitForSeconds(MAX_DELAY);
 			// Then, it decreases.
 			timer = 0f;
@@ -143,7 +153,16 @@ public class Cactus : MonoBehaviour {
 				sr.color = tempColor;
 				timer += Time.deltaTime;
 				yield return new WaitForSeconds(Time.deltaTime);
+				// Use jumpFX to check the strength of the jump and adjust animation accordingly.
+				if (jumpFX > (3 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 3);
+				} else if (jumpFX > (2 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 2);
+				} else if (jumpFX > (1 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 1);
+				}
 			}
+			anim.SetInteger("ChargePhase", 0);
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
 	}
