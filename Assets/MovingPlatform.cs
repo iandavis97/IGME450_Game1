@@ -16,7 +16,6 @@ public class MovingPlatform : MonoBehaviour {
     public bool drawDebug;
 
     //get the parent object for lerping
-    GameObject platform;
     int currentPoint;
     int destinationPoint;
     int numPoints;
@@ -25,7 +24,6 @@ public class MovingPlatform : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
-        platform = gameObject;
         currentPoint = 0;
         destinationPoint = currentPoint + 1;
 
