@@ -86,7 +86,7 @@ public class Cactus : MonoBehaviour {
 			StopCoroutine(currCoroutine);
 			animDust.SetTrigger("jump");
 			animDust.transform.position = new Vector2(transform.position.x - (transform.localScale.x * 0.5f), transform.position.y -0.25f);
-			animDust.transform.localScale = transform.localScale;
+			// animDust.transform.localScale = transform.localScale;
 			sr.color = Color.white;
 			if (direction.y < 0.1f) { // Handle the case where the mouse is pointing below our character. This is a short hop.
 				rb.AddForce(new Vector2(direction.x * MIN_JUMP_FX, MIN_JUMP_FY), ForceMode2D.Impulse);
