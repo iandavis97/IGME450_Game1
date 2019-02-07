@@ -19,7 +19,13 @@ EditorBuildSettings:
     guid: ad5b4e6c052d1e048aee7f12d0eaab51
   - enabled: 1
     path: Assets/Ian_Level.unity
+    guid: cbfa316ea7f8e814eb05bd7805bbb3bf
+  - enabled: 0
+    path: Assets/__DELETED_GUID_Trash/77e534130c8d8de40833d27f2d1eef34
     guid: 77e534130c8d8de40833d27f2d1eef34
+  - enabled: 0
+    path: Assets/__DELETED_GUID_Trash/932f3304f4b76f345babb84fefdc530b
+    guid: 932f3304f4b76f345babb84fefdc530b
   - enabled: 1
     path: Assets/So_Level.unity
     guid: 7a542d917ce1b0f45abd20898a1150d4
