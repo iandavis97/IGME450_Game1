@@ -13,7 +13,6 @@ public class Cactus : MonoBehaviour {
 
 	public KeyCode cactus; // The key to hit for jumping.
     public int facingRight = 1;//used for changing directions, should always start facing right. +1 is right, -1 is left. Possible values are +1 and -1.
-    public int segments = 10; // number of segments in the prediction arc
 
     //audio clips
     public AudioSource deathSound;

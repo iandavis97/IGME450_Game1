@@ -1401,6 +1401,11 @@ Prefab:
       propertyPath: deathBounds
       value: 
       objectReference: {fileID: 205757444}
+    - target: {fileID: 120127174457951408, guid: c9a553314a008c447b6f4b8d688b0e41,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6ca681647728a2b4fb9f671cc9c931e8, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9a553314a008c447b6f4b8d688b0e41, type: 2}
   m_IsPrefabAsset: 0
