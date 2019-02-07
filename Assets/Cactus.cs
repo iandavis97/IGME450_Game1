@@ -127,6 +127,7 @@ public class Cactus : MonoBehaviour {
 		// Oscillating jump
 		while (true) {
 			anim.SetBool("Charging", true);
+			anim.SetInteger("ChargePhase", 0); // ChargePhase goes from 0 to 4 inclusive, where 0 is minimum, 4 is max.
 			// Our jump strength increases...
 			timer = 0f;
 			while (jumpFX < MAX_JUMP_FX || jumpFY < MAX_JUMP_FY) { 
@@ -139,6 +140,21 @@ public class Cactus : MonoBehaviour {
 				jumpFY = Mathf.Lerp(MIN_JUMP_FY, MAX_JUMP_FY, (timer / HOLD_TIME));
                 timer = Time.time - timeUp;
 				yield return new WaitForSeconds(Time.deltaTime);
+				// Use jumpFX to check the strength of the jump and adjust animation accordingly.
+				if (jumpFX > (3 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 3);
+				} else if (jumpFX > (2 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 2);
+				} else if (jumpFX > (1 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 1);
+				}
+			}
+			anim.SetInteger("ChargePhase", 4);
+			yield return new WaitForSeconds(MAX_DELAY);
+			// Then, it decreases.
+			timer = 0f;
+			while (jumpFX > MIN_JUMP_FX || jumpFY > MIN_JUMP_FY) { 
+				jumpFX = Mathf.Lerp(MAX_JUMP_FX, MIN_JUMP_FX, (timer / HOLD_TIME));
             }
             chargeUp = false;
             yield return new WaitForSeconds(MAX_DELAY);
@@ -155,8 +171,17 @@ public class Cactus : MonoBehaviour {
 				jumpFY = Mathf.Lerp(MAX_JUMP_FY, MIN_JUMP_FY, (timer / HOLD_TIME));
                 timer = Time.time - timeDown;
 				yield return new WaitForSeconds(Time.deltaTime);
+				// Use jumpFX to check the strength of the jump and adjust animation accordingly.
+				if (jumpFX > (3 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 3);
+				} else if (jumpFX > (2 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 2);
+				} else if (jumpFX > (1 * MAX_JUMP_FX / 4)) {
+					anim.SetInteger("ChargePhase", 1);
+				}
 			}
             chargeDown = false;
+			anim.SetInteger("ChargePhase", 0);
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
 	}
