@@ -150,17 +150,16 @@ public class Cactus : MonoBehaviour {
 				}
 			}
 			anim.SetInteger("ChargePhase", 4);
+            Debug.Log("Maybe");
 			yield return new WaitForSeconds(MAX_DELAY);
+            Debug.Log("No");
 			// Then, it decreases.
 			timer = 0f;
-			while (jumpFX > MIN_JUMP_FX || jumpFY > MIN_JUMP_FY) { 
-				jumpFX = Mathf.Lerp(MAX_JUMP_FX, MIN_JUMP_FX, (timer / HOLD_TIME));
-            }
             chargeUp = false;
             yield return new WaitForSeconds(MAX_DELAY);
             // Then, it decreases.
             timer = 0f;
-			while (jumpFX > MIN_JUMP_FX || jumpFY > MIN_JUMP_FY)
+            while (jumpFX > MIN_JUMP_FX || jumpFY > MIN_JUMP_FY)
             {
                 if (!chargeDown)
                 {
@@ -168,18 +167,23 @@ public class Cactus : MonoBehaviour {
                     chargeDown = true;
                 }
                 jumpFX = Mathf.Lerp(MAX_JUMP_FX, MIN_JUMP_FX, (timer / HOLD_TIME));
-				jumpFY = Mathf.Lerp(MAX_JUMP_FY, MIN_JUMP_FY, (timer / HOLD_TIME));
+                jumpFY = Mathf.Lerp(MAX_JUMP_FY, MIN_JUMP_FY, (timer / HOLD_TIME));
                 timer = Time.time - timeDown;
-				yield return new WaitForSeconds(Time.deltaTime);
-				// Use jumpFX to check the strength of the jump and adjust animation accordingly.
-				if (jumpFX > (3 * MAX_JUMP_FX / 4)) {
-					anim.SetInteger("ChargePhase", 3);
-				} else if (jumpFX > (2 * MAX_JUMP_FX / 4)) {
-					anim.SetInteger("ChargePhase", 2);
-				} else if (jumpFX > (1 * MAX_JUMP_FX / 4)) {
-					anim.SetInteger("ChargePhase", 1);
-				}
-			}
+                yield return new WaitForSeconds(Time.deltaTime);
+                // Use jumpFX to check the strength of the jump and adjust animation accordingly.
+                if (jumpFX > (3 * MAX_JUMP_FX / 4))
+                {
+                    anim.SetInteger("ChargePhase", 3);
+                }
+                else if (jumpFX > (2 * MAX_JUMP_FX / 4))
+                {
+                    anim.SetInteger("ChargePhase", 2);
+                }
+                else if (jumpFX > (1 * MAX_JUMP_FX / 4))
+                {
+                    anim.SetInteger("ChargePhase", 1);
+                }
+            }
             chargeDown = false;
 			anim.SetInteger("ChargePhase", 0);
 			yield return new WaitForSeconds(Time.deltaTime);
