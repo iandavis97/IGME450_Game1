@@ -43,6 +43,10 @@ public class Cactus : MonoBehaviour {
 
 	private int layerMask;
 
+    private bool chargeUp = false;
+    private bool chargeDown = false;
+    private float timeUp;
+    private float timeDown;
     
 
 	void Awake() {
@@ -93,10 +97,14 @@ public class Cactus : MonoBehaviour {
 			jumpFX = 0;
 			jumpFY = 0;
 			anim.SetBool("Charging", false);
+            chargeDown = false;
+            chargeUp = false;
 		} else if (Input.GetKeyUp(cactus) && anim.GetBool("InAir")) { // Cancel our jump charge.
 			StopCoroutine(currCoroutine);
 			anim.SetBool("Charging", false);
-		}
+            chargeDown = false;
+            chargeUp = false;
+        }
 		DrawLine();
         //changing directions before jump
         if ((direction.x <= 0 && (facingRight == 1)) || (direction.x > 0 && facingRight == -1))  {
@@ -123,13 +131,14 @@ public class Cactus : MonoBehaviour {
 			// Our jump strength increases...
 			timer = 0f;
 			while (jumpFX < MAX_JUMP_FX || jumpFY < MAX_JUMP_FY) { 
+                if(!chargeUp)
+                {
+                    timeUp = Time.time;
+                    chargeUp = true;
+                }
 				jumpFX = Mathf.Lerp(MIN_JUMP_FX, MAX_JUMP_FX, (timer / HOLD_TIME));
 				jumpFY = Mathf.Lerp(MIN_JUMP_FY, MAX_JUMP_FY, (timer / HOLD_TIME));
-				tempColor.r = Mathf.Lerp(Color.white.r, Color.red.r, (timer / HOLD_TIME));
-				tempColor.g = Mathf.Lerp(Color.white.g, Color.red.g, (timer / HOLD_TIME));
-				tempColor.b = Mathf.Lerp(Color.white.b, Color.red.b, (timer / HOLD_TIME));
-				sr.color = tempColor;
-				timer += Time.deltaTime;
+                timer = Time.time - timeUp;
 				yield return new WaitForSeconds(Time.deltaTime);
 				// Use jumpFX to check the strength of the jump and adjust animation accordingly.
 				if (jumpFX > (3 * MAX_JUMP_FX / 4)) {
@@ -141,27 +150,41 @@ public class Cactus : MonoBehaviour {
 				}
 			}
 			anim.SetInteger("ChargePhase", 4);
+            Debug.Log("Maybe");
 			yield return new WaitForSeconds(MAX_DELAY);
+            Debug.Log("No");
 			// Then, it decreases.
 			timer = 0f;
-			while (jumpFX > MIN_JUMP_FX || jumpFY > MIN_JUMP_FY) { 
-				jumpFX = Mathf.Lerp(MAX_JUMP_FX, MIN_JUMP_FX, (timer / HOLD_TIME));
-				jumpFY = Mathf.Lerp(MAX_JUMP_FY, MIN_JUMP_FY, (timer / HOLD_TIME));
-				tempColor.r = Mathf.Lerp(Color.red.r, Color.white.r, (timer / HOLD_TIME));
-				tempColor.g = Mathf.Lerp(Color.red.g, Color.white.g, (timer / HOLD_TIME));
-				tempColor.b = Mathf.Lerp(Color.red.b, Color.white.b, (timer / HOLD_TIME));
-				sr.color = tempColor;
-				timer += Time.deltaTime;
-				yield return new WaitForSeconds(Time.deltaTime);
-				// Use jumpFX to check the strength of the jump and adjust animation accordingly.
-				if (jumpFX > (3 * MAX_JUMP_FX / 4)) {
-					anim.SetInteger("ChargePhase", 3);
-				} else if (jumpFX > (2 * MAX_JUMP_FX / 4)) {
-					anim.SetInteger("ChargePhase", 2);
-				} else if (jumpFX > (1 * MAX_JUMP_FX / 4)) {
-					anim.SetInteger("ChargePhase", 1);
-				}
-			}
+            chargeUp = false;
+            yield return new WaitForSeconds(MAX_DELAY);
+            // Then, it decreases.
+            timer = 0f;
+            while (jumpFX > MIN_JUMP_FX || jumpFY > MIN_JUMP_FY)
+            {
+                if (!chargeDown)
+                {
+                    timeDown = Time.time;
+                    chargeDown = true;
+                }
+                jumpFX = Mathf.Lerp(MAX_JUMP_FX, MIN_JUMP_FX, (timer / HOLD_TIME));
+                jumpFY = Mathf.Lerp(MAX_JUMP_FY, MIN_JUMP_FY, (timer / HOLD_TIME));
+                timer = Time.time - timeDown;
+                yield return new WaitForSeconds(Time.deltaTime);
+                // Use jumpFX to check the strength of the jump and adjust animation accordingly.
+                if (jumpFX > (3 * MAX_JUMP_FX / 4))
+                {
+                    anim.SetInteger("ChargePhase", 3);
+                }
+                else if (jumpFX > (2 * MAX_JUMP_FX / 4))
+                {
+                    anim.SetInteger("ChargePhase", 2);
+                }
+                else if (jumpFX > (1 * MAX_JUMP_FX / 4))
+                {
+                    anim.SetInteger("ChargePhase", 1);
+                }
+            }
+            chargeDown = false;
 			anim.SetInteger("ChargePhase", 0);
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
