@@ -13,6 +13,7 @@ public class Cactus : MonoBehaviour {
 
 	public KeyCode cactus; // The key to hit for jumping.
     public int facingRight = 1;//used for changing directions, should always start facing right. +1 is right, -1 is left. Possible values are +1 and -1.
+    public int segments = 10; // number of segments in the prediction arc
 
 	private float jumpFX = 0f; // Horizontal Force to apply to make the cactus jump.
 	private float jumpFY = 0f; // Vertictal Force to apply to make the cactus jump.
@@ -209,22 +210,21 @@ public class Cactus : MonoBehaviour {
         if (anim.GetBool("Charging"))
         {
             // declare local variables
-            Vector3 end;
+            Vector3 end = new Vector3(jumpFX, jumpFY, 0);
             Vector3 start;
 
-            // set up points for the line
-            if (facingRight == 1)
+            // project the magnitude onto the direction vector to make the line point toward the cursor instead of being more accurate to the actual movement, because it feels better.
+            end = end.magnitude * direction;
+
+            // make sure the line is facing the correct x direction
+            if (facingRight == -1)
             {
-                end = new Vector3(direction.x * jumpFX, direction.y * jumpFY, 0);
-            }
-            else
-            {
-                end = new Vector3(direction.x * -1 * jumpFX, direction.y * jumpFY, 0);
+                end.x *= -1;
             }
             
             start = Vector3.zero;
             end += start;
-            end /= 10; // I played with this number til I thought it felt right this might need to be changed later
+            end /= rb.mass * 5; // I played with this number til I thought it felt right
 
             // draw the line
             line.SetPosition(0, start);
@@ -236,5 +236,4 @@ public class Cactus : MonoBehaviour {
             line.SetPosition(1, Vector3.zero);
         }
     }
-
 }
